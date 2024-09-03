@@ -1,14 +1,14 @@
 import { Scene } from 'phaser';
 
 export class Preloader extends Scene
+
 {
     constructor ()
     {
         super('Preloader');
     }
 
-    init ()
-    {
+    init () {
         //  We loaded this image in our Boot Scene, so we can display it here
         this.add.image(512, 384, 'background');
 
@@ -27,20 +27,22 @@ export class Preloader extends Scene
         });
     }
 
-    preload ()
-    {
-        //  Load the assets for the game - Replace with your own assets
-        this.load.setPath('assets');
-
-        this.load.image('logo', 'logo.png');
+    preload () {
+        this.load.image('space', 'assets/space3.png');
+        this.load.image('diamond', 'assets/diamond.png');
+        this.load.image('grass', 'assets/grass.png');    
+        this.load.image('bank', 'assets/bank.png');
+        this.load.image('house', 'assets/house.png');    
+        this.load.image('red', 'assets/red.png');
+        this.load.image('sky', 'assets/sky.png');
+        this.load.spritesheet('unicorn', 'assets/unicorn.png', { frameWidth: 16, frameHeight: 16, spacing: 1 });
     }
 
-    create ()
-    {
+    create () {
         //  When all the assets have loaded, it's often worth creating global objects here that the rest of the game can use.
         //  For example, you can define global animations here, so we can use them in other scenes.
 
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
-        this.scene.start('MainMenu');
+        this.scene.start('MainGame');
     }
 }
