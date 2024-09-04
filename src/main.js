@@ -7,7 +7,7 @@ import { Preloader } from './scenes/Preloader.js';
 // 22https://opengameart.org/content/running-unicorn-0
 var config = {
     type: Phaser.AUTO,
-    width: 1800,
+    width: 800,
     height: 600,
     backgroundColor: '#111111',
     physics: {
