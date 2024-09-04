@@ -1,38 +1,33 @@
 {
-    "name": "template-parcel-ts",
-    "version": "1.2.0",
-    "description": "A Phaser 3 TypeScript template using Parcel 2 as the bundler.",
+    "name": "idle-unicorns",
+    "version": "0.0.1",
+    "description": "meh!",
     "source": "./index.html",
     "browserslist": "> 0.25%, last 2 versions, not dead",
-    "scripts": {
-        "dev": "parcel index.html --no-cache --config ./parcel/.parcel.dev --open",
-        "build": "parcel build index.html --public-url _relativeroute_ --no-source-maps --log-level error --config ./parcel/.parcel.prod"
-    },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/phaserjs/template-parcel-ts.git"
+        "url": "git+https://github.com/pcal43/idle-unicorns.git"
     },
-    "author": "Phaser Studio <support@phaser.io> (https://phaser.io/)",
+    "author": "pcal",
     "license": "MIT",
     "licenseUrl": "http://www.opensource.org/licenses/mit-license.php",
     "bugs": {
-        "url": "https://github.com/phaserjs/template-parcel-ts/issues"
+        "url": "https://github.com/pcal43/idle-unicorns/issues"	
     },
-    "homepage": "https://github.com/phaserjs/template-parcel-ts#readme",
+    "homepage": "https://github.com/pcal43/idle-unicorns/issues",
+    "scripts": {
+        "start": "vite --config vite/config.dev.mjs",
+        "build": "vite build --config vite/config.prod.mjs && phaser-asset-pack-hashing -j -r dist"
+    },
     "devDependencies": {
-        "@parcel/transformer-glsl": "^2.12.0",
-        "@parcel/transformer-typescript-tsc": "^2.12.0",
-        "express": "^4.19.2",
-        "parcel": "^2.12.0",
-        "parcel-reporter-clean-dist": "^1.0.4",
-        "parcel-reporter-static-files-copy": "^1.5.3",
-        "process": "^0.11.10",
-        "typescript": "^5.4.5"
+        "phaser-asset-pack-hashing": "^1.0.6",
+        "terser": "^5.28.1",
+        "typescript": "^5.3.3",
+        "vite": "^5.1.4"
     },
     "dependencies": {
-        "phaser": "^3.80.1"
-    },
-    "staticFiles": {
-        "staticPath": "public"
+        "@phaserjs/editor-scripts-core": "^2.0.0",
+        "@phaserjs/editor-scripts-simple-animations": "^2.0.0",
+        "phaser": "3.80.1"
     }
 }
