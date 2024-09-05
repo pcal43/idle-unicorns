@@ -3,24 +3,26 @@ import { Scene } from 'phaser';
 
 import * as Phaser from "phaser";
 
+type ArcadeColliderType = Phaser.Types.Physics.Arcade.ArcadeColliderType;
+type Camera2D = Phaser.Cameras.Scene2D.Camera;
+type NewType = Phaser.GameObjects.Text;
+type ImageWithDynamicBody = Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
+
 export class MainGame extends Scene {
 
 
+    UNICORN_SPEED:integer = 350
+    UNICORN_COST:integer = 3
+    GROUND_LEVEL:integer = 580
+    GROUND_DEPTH:integer = 25
 
-    scene = this
-
-    UNICORN_SPEED = 350
-    UNICORN_COST = 3
-    GROUND_LEVEL = 580
-    GROUND_DEPTH = 25
-
-    bank
-    score = 0
-    scoreText;
-    costText;
-    mainCamera
-    unicorns
-    returningUnicorns
+    bank: ArcadeColliderType
+    score:integer = 0
+    scoreText: NewType;
+    costText: Text;
+    mainCamera: Camera2D
+    unicorns: ArcadeColliderType
+    returningUnicorns: ArcadeColliderType
 
     DIAMOND_STAGE = 0
     BANK_STAGE = 1
@@ -42,12 +44,12 @@ export class MainGame extends Scene {
     }
 
 
-    preload() {
+    preload() : void {
     }
 
 
 
-    minimumStage(minStage) {
+    minimumStage(minStage:integer) : void {
         if (this.stage < minStage) {
             switch (minStage) {
                 case this.DIAMOND_STAGE:
@@ -65,7 +67,7 @@ export class MainGame extends Scene {
     }
 
 
-    panCameraTo(newX, newY) {
+    panCameraTo(newX:integer, newY:integer) : void {
         this.mainCamera.pan(newX, newY, 2500, 'Linear', false, function (camera, progress, dx, dy) {
             var base = (this.GROUND_LEVEL + this.GROUND_DEPTH)
             var my = base / 2 - ((base / 2 - newY) * progress)
@@ -74,11 +76,11 @@ export class MainGame extends Scene {
     }
 
     create() {
-        var outerThis = this
+        var scene = this
 
-        this.mainCamera = this.cameras.main
+        scene.mainCamera = this.cameras.main
 
-        var sky = this.add.image(400, 300, 'sky').setScale(10);
+        var sky = scene.add.image(400, 300, 'sky').setScale(10);
         //sky.setInteractive();
 
         //var particles = this.add.particles('red');
@@ -96,14 +98,15 @@ export class MainGame extends Scene {
         this.groundShards = this.physics.add.group();
         this.flyingShards = this.physics.add.group();
 
-        this.diamond = this.physics.add.image(400, -200, 'diamond');
 
-        this.diamond.setSize(4, 4, true);
-        this.diamond.setScale(.5)
-        this.diamond.setInteractive()
-        emitter.startFollow(this.diamond);
-        this.diamond.on('pointerdown', function (pointer, targets) {
-            var shard = outerThis.flyingShards.create(400, 500, 'diamond');
+        var diamond: ImageWithDynamicBody = this.physics.add.image(400, -200, 'diamond');
+
+        diamond.setSize(4, 4, true);
+        diamond.setScale(.5)
+        diamond.setInteractive()
+        emitter.startFollow(diamond);
+        diamond.on('pointerdown', function (pointer, targets) {
+            var shard = scene.flyingShards.create(400, 500, 'diamond');
             shard.setBounce(0);
             //shard.setCollideWorldBounds(true);
             shard.setBlendMode(Phaser.BlendModes.ADD);
@@ -111,12 +114,12 @@ export class MainGame extends Scene {
             shard.setScale(.05)
             shard.setVelocity(Phaser.Math.Between(100, 200), Phaser.Math.Between(-500, -900));
             shard.setInteractive()
-            outerThis.minimumStage(outerThis.BANK_STAGE)
+            scene.minimumStage(scene.BANK_STAGE)
 
             shard.on('pointerdown', function (pointer, targets) {
-                if (outerThis.groundShards.contains(shard)) {
-                    outerThis.groundShards.remove(shard)
-                    outerThis.flyingShards.add(shard)
+                if (scene.groundShards.contains(shard)) {
+                    scene.groundShards.remove(shard)
+                    scene.flyingShards.add(shard)
                     shard.setVelocity(Phaser.Math.Between(100, 200), Phaser.Math.Between(-500, -900))
                 }
             })
@@ -134,7 +137,7 @@ export class MainGame extends Scene {
         house.setImmovable(true);
         house.body.allowGravity = false;
         house.setInteractive()
-        house.on('pointerdown', function (pointer, targets) { outerThis.tryAddUnicorn() })
+        house.on('pointerdown', function (pointer, targets) { scene.tryAddUnicorn() })
 
 
         this.unicorns = this.physics.add.group();
@@ -145,26 +148,26 @@ export class MainGame extends Scene {
         // setup collisions
         //
         this.physics.add.collider(this.flyingShards, this.ground, function (shard, platform) {
-            outerThis.flyingShards.remove(shard)
-            outerThis.groundShards.add(shard)
+            scene.flyingShards.remove(shard)
+            scene.groundShards.add(shard)
             shard.setVelocity(0, 0)
         });
         this.physics.add.collider(this.bank, this.flyingShards, function (bank, shard) {
             shard.disableBody(true, true);
-            outerThis.updateScore(1)
+            scene.updateScore(1)
         });
         this.physics.add.collider(this.groundShards, this.ground);
-        this.physics.add.collider(this.diamond, this.ground);
+        this.physics.add.collider(diamond, this.ground);
         this.physics.add.collider(this.unicorns, this.ground);
         this.physics.add.collider(this.returningUnicorns, this.ground);
         this.physics.add.collider(this.unicorns, this.groundShards, function (unicorn, shard) {
             shard.setVelocity(0, 0)
-            outerThis.flyingShards.add(shard)
-            outerThis.groundShards.remove(shard)
+            scene.flyingShards.add(shard)
+            scene.groundShards.remove(shard)
             shard.setVelocity(Phaser.Math.Between(100, 200), Phaser.Math.Between(-500, -900));
-            outerThis.unicorns.remove(unicorn)
-            outerThis.returningUnicorns.add(unicorn)
-            unicorn.setVelocityX(outerThis.UNICORN_SPEED)
+            scene.unicorns.remove(unicorn)
+            scene.returningUnicorns.add(unicorn)
+            unicorn.setVelocityX(scene.UNICORN_SPEED)
             unicorn.setFlipX(!unicorn.flipX)
         });
 
@@ -209,7 +212,7 @@ export class MainGame extends Scene {
         this.phys = this.physics
 
         unicornButton.on('pointerdown', function (pointer, targets) {
-            outerThis.tryAddUnicorn()
+            scene.tryAddUnicorn()
         });
 
     }
@@ -242,14 +245,14 @@ export class MainGame extends Scene {
     }
 
     update() {
-        var outerThis = this
+        var scene = this
 
         this.unicorns.children.iterate(function (uni) {
             // make the unicorn turn around if it is off the world boundaries
             if (typeof uni !== 'undefined' && uni.x < 0) {
-                outerThis.unicorns.remove(uni)
-                outerThis.returningUnicorns.add(uni)
-                uni.body.setVelocityX(outerThis.UNICORN_SPEED)
+                scene.unicorns.remove(uni)
+                scene.returningUnicorns.add(uni)
+                uni.body.setVelocityX(scene.UNICORN_SPEED)
                 uni.setFlipX(false)
             }
         });
@@ -257,9 +260,9 @@ export class MainGame extends Scene {
         this.returningUnicorns.children.iterate(function (uni) {
             // make the unicorn turn around if it is off the world boundaries
             if (typeof uni !== 'undefined' && uni.x > 1200) {
-                outerThis.returningUnicorns.remove(uni)
-                outerThis.unicorns.add(uni)
-                uni.body.setVelocityX(-outerThis.UNICORN_SPEED)
+                scene.returningUnicorns.remove(uni)
+                scene.unicorns.add(uni)
+                uni.body.setVelocityX(-scene.UNICORN_SPEED)
                 uni.setFlipX(true)
             }
         });
