@@ -40,10 +40,11 @@
             "type": "Image",
             "id": "bccf0360-2f45-4675-a227-8fbf8505efa2",
             "label": "house",
+            "scope": "PUBLIC",
             "texture": {
                 "key": "house"
             },
-            "x": 862,
+            "x": 883,
             "y": 667,
             "scaleX": 0.28815620461799274,
             "scaleY": 0.28815620461799274
@@ -53,7 +54,7 @@
             "id": "c827a23a-4553-4fb3-aa3c-585ceef90ff1",
             "label": "arcadeimage_1",
             "useGameObjectName": true,
-            "scope": "CLASS",
+            "scope": "PUBLIC",
             "texture": {
                 "key": "diamond"
             },
@@ -70,11 +71,12 @@
             "type": "ArcadeImage",
             "id": "50560834-ad34-44a8-a95d-079669155dde",
             "label": "arcadeimage_2",
+            "scope": "PUBLIC",
             "texture": {
                 "key": "bank"
             },
-            "x": 564,
-            "y": 667,
+            "x": 616,
+            "y": 665,
             "scaleX": 0.21326127874374826,
             "scaleY": 0.21326127874374826,
             "immovable": true,
@@ -85,6 +87,7 @@
             "type": "Image",
             "id": "fea5f87b-0515-4bb9-99ed-d17675b12c1b",
             "label": "red",
+            "scope": "PUBLIC",
             "texture": {
                 "key": "red"
             },

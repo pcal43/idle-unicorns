@@ -29,7 +29,7 @@ export default class MainGameLayout extends Phaser.Scene {
 		this.add.tileSprite(563, 754, 1325, 31, "grass");
 
 		// house
-		const house = this.add.image(862, 667, "house");
+		const house = this.add.image(883, 667, "house");
 		house.scaleX = 0.28815620461799274;
 		house.scaleY = 0.28815620461799274;
 
@@ -42,21 +42,27 @@ export default class MainGameLayout extends Phaser.Scene {
 		arcadeimage_1.body.setSize(550, 452, false);
 
 		// arcadeimage_2
-		const arcadeimage_2 = this.physics.add.image(564, 667, "bank");
+		const arcadeimage_2 = this.physics.add.image(616, 665, "bank");
 		arcadeimage_2.scaleX = 0.21326127874374826;
 		arcadeimage_2.scaleY = 0.21326127874374826;
 		arcadeimage_2.body.immovable = true;
 		arcadeimage_2.body.setSize(917, 715, false);
 
 		// red
-		this.add.image(478, 266, "red");
+		const red = this.add.image(478, 266, "red");
 
+		this.house = house;
 		this.arcadeimage_1 = arcadeimage_1;
+		this.arcadeimage_2 = arcadeimage_2;
+		this.red = red;
 
 		this.events.emit("scene-awake");
 	}
 
-	private arcadeimage_1!: Phaser.Physics.Arcade.Image;
+	public house!: Phaser.GameObjects.Image;
+	public arcadeimage_1!: Phaser.Physics.Arcade.Image;
+	public arcadeimage_2!: Phaser.Physics.Arcade.Image;
+	public red!: Phaser.GameObjects.Image;
 
 	/* START-USER-CODE */
 

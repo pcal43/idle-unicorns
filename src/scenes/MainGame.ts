@@ -17,7 +17,6 @@ export class MainGame extends Layout.default {
     }
 
     update() {
-        var ai1: Phaser.Physics.Arcade.Image = this['arcadeimage_1']
-        this['arcadeimage_1'].scaleX = this['arcadeimage_1'].scaleX + 1
+        this.arcadeimage_1.scaleX = this.arcadeimage_1.scaleX + .1
     }
 }
