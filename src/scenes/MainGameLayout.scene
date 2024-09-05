@@ -1,0 +1,101 @@
+{
+    "id": "69a48ce5-a7cd-47e3-9ad9-4f3d207b8c9f",
+    "sceneType": "SCENE",
+    "settings": {
+        "autoImport": true,
+        "preloadPackFiles": [],
+        "createMethodName": "editorCreate",
+        "sceneKey": "MainGame",
+        "compilerOutputLanguage": "TYPE_SCRIPT",
+        "borderWidth": 1024,
+        "borderHeight": 768
+    },
+    "displayList": [
+        {
+            "type": "Image",
+            "id": "893c192d-97b4-4182-92b3-5e9296215f29",
+            "label": "sky",
+            "texture": {
+                "key": "sky"
+            },
+            "scaleX": 1.2778527722618436,
+            "scaleY": 1.2758214667225969,
+            "originX": 0,
+            "originY": 0
+        },
+        {
+            "type": "TileSprite",
+            "id": "813eeb69-ecb2-4a64-b16b-ea3ee11ff964",
+            "label": "tilesprite_1",
+            "texture": {
+                "key": "grass"
+            },
+            "x": 563,
+            "y": 754,
+            "width": 1325,
+            "height": 31
+        },
+        {
+            "type": "Image",
+            "id": "bccf0360-2f45-4675-a227-8fbf8505efa2",
+            "label": "house",
+            "texture": {
+                "key": "house"
+            },
+            "x": 862,
+            "y": 667,
+            "scaleX": 0.28815620461799274,
+            "scaleY": 0.28815620461799274
+        },
+        {
+            "type": "ArcadeImage",
+            "id": "c827a23a-4553-4fb3-aa3c-585ceef90ff1",
+            "label": "arcadeimage_1",
+            "useGameObjectName": true,
+            "scope": "CLASS",
+            "texture": {
+                "key": "diamond"
+            },
+            "x": 245,
+            "y": 156,
+            "scaleX": 0.32676769622281354,
+            "scaleY": 0.32676769622281354,
+            "body.width": 550,
+            "body.height": 452,
+            "body.offset.x": 5,
+            "body.offset.y": 5
+        },
+        {
+            "type": "ArcadeImage",
+            "id": "50560834-ad34-44a8-a95d-079669155dde",
+            "label": "arcadeimage_2",
+            "texture": {
+                "key": "bank"
+            },
+            "x": 564,
+            "y": 667,
+            "scaleX": 0.21326127874374826,
+            "scaleY": 0.21326127874374826,
+            "immovable": true,
+            "body.width": 917,
+            "body.height": 715
+        },
+        {
+            "type": "Image",
+            "id": "fea5f87b-0515-4bb9-99ed-d17675b12c1b",
+            "label": "red",
+            "texture": {
+                "key": "red"
+            },
+            "x": 478,
+            "y": 266
+        }
+    ],
+    "plainObjects": [],
+    "meta": {
+        "app": "Phaser Editor - Scene Editor",
+        "url": "https://phaser.io/editor",
+        "contentType": "phasereditor2d.core.scene.SceneContentType",
+        "version": 5
+    }
+}
