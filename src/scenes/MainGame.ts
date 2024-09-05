@@ -1,8 +1,8 @@
 
-import { MainGameLayout } from './MainGameLayout.ts'
+import * as Layout from './MainGameLayout.ts'
 
 
-export class MainGame extends MainGameLayout {
+export class MainGame extends Layout.default {
 
 
     constructor() {
@@ -17,6 +17,7 @@ export class MainGame extends MainGameLayout {
     }
 
     update() {
-		this.arcadeimage_1.scaleX = this.arcadeimage_1.scaleX + 1
+        var ai1: Phaser.Physics.Arcade.Image = this['arcadeimage_1']
+        this['arcadeimage_1'].scaleX = this['arcadeimage_1'].scaleX + 1
     }
 }

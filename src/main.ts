@@ -1,11 +1,11 @@
 
 import * as Phaser from "phaser";
 
-//import { MainGame } from './scenes/MainGame.ts';
+import { MainGame } from './scenes/MainGame.ts';
 
 import { Preloader } from './scenes/Preloader.ts';
 
-import { MainGameLayout } from './scenes/MainGameLayout.ts'
+//import * as MainGameLayout from './scenes/MainGameLayout.ts'
 
 
 // 22https://opengameart.org/content/running-unicorn-0
@@ -22,7 +22,7 @@ var config = {
         }
     },
     pixelArt: true,
-    scene: [ Preloader, MainGameLayout ]
+    scene: [ Preloader, MainGame ]
 };
 
 export default new Phaser.Game(config);

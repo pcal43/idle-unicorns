@@ -7,7 +7,7 @@ import Phaser from "phaser";
 /* START-USER-IMPORTS */
 /* END-USER-IMPORTS */
 
-export class MainGameLayout extends Phaser.Scene {
+export default class MainGameLayout extends Phaser.Scene {
 
 	constructor() {
 		super("MainGame");
@@ -42,31 +42,29 @@ export class MainGameLayout extends Phaser.Scene {
 		arcadeimage_1.body.setSize(550, 452, false);
 
 		// arcadeimage_2
-		const arcadeimage_2 = this.physics.add.image(565, 667, "bank");
+		const arcadeimage_2 = this.physics.add.image(564, 667, "bank");
 		arcadeimage_2.scaleX = 0.21326127874374826;
 		arcadeimage_2.scaleY = 0.21326127874374826;
 		arcadeimage_2.body.immovable = true;
 		arcadeimage_2.body.setSize(917, 715, false);
 
 		// red
-		this.add.image(364, 201, "red");
-
-		// collider
-		this.physics.add.collider();
+		this.add.image(478, 266, "red");
 
 		this.arcadeimage_1 = arcadeimage_1;
 
 		this.events.emit("scene-awake");
 	}
 
-	 private arcadeimage_1!: Phaser.Physics.Arcade.Image;
+	private arcadeimage_1!: Phaser.Physics.Arcade.Image;
 
 	/* START-USER-CODE */
 
 	// Write your code here
 
 	create() {
-        this.editorCreate();
+
+		this.editorCreate();
 	}
 
 	/* END-USER-CODE */

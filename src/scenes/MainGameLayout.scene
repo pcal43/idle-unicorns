@@ -2,6 +2,7 @@
     "id": "69a48ce5-a7cd-47e3-9ad9-4f3d207b8c9f",
     "sceneType": "SCENE",
     "settings": {
+        "exportClass": true,
         "autoImport": true,
         "preloadPackFiles": [],
         "createMethodName": "editorCreate",
