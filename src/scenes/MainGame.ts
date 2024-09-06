@@ -125,13 +125,10 @@ export class MainGame extends Scene {
             })
         });
 
-        //var bank: ArcadeColliderType
-
         var bank: ImageWithDynamicBody = this.physics.add.image(915, 520, 'bank');
         // FIXME compiler complaining about the third argument here, but removing it causes lag
-        bank.setDisplaySize(bank.width - 200, bank.height - 200)
         bank.setScale(.25)
-        bank.setImmovable(true);
+        bank.body.setImmovable(true);
         bank.body.allowGravity = false;
 
         var house = this.physics.add.image(this.HOUSE_X, this.HOUSE_Y, 'house');
