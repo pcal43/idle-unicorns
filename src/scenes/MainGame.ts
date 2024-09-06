@@ -3,10 +3,12 @@ import { Scene } from 'phaser';
 
 import * as Phaser from "phaser";
 
+type Image = Phaser.GameObjects.Image;
 type ArcadeColliderType = Phaser.Types.Physics.Arcade.ArcadeColliderType;
 type Camera2D = Phaser.Cameras.Scene2D.Camera;
 type NewType = Phaser.GameObjects.Text;
 type ImageWithDynamicBody = Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
+type Group = Phaser.Physics.Arcade.Group;
 
 export class MainGame extends Scene {
 
@@ -16,7 +18,6 @@ export class MainGame extends Scene {
     GROUND_LEVEL:integer = 580
     GROUND_DEPTH:integer = 25
 
-    bank: ArcadeColliderType
     score:integer = 0
     scoreText: NewType;
     costText: Text;
@@ -55,7 +56,6 @@ export class MainGame extends Scene {
                 case this.DIAMOND_STAGE:
                     break;
                 case this.BANK_STAGE:
-
                     this.panCameraTo(630, this.GROUND_LEVEL / 2)
                     break;
                 case this.HOUSE_STAGE:
@@ -68,8 +68,9 @@ export class MainGame extends Scene {
 
 
     panCameraTo(newX:integer, newY:integer) : void {
+        var scene = this
         this.mainCamera.pan(newX, newY, 2500, 'Linear', false, function (camera, progress, dx, dy) {
-            var base = (this.GROUND_LEVEL + this.GROUND_DEPTH)
+            var base = (scene.GROUND_LEVEL + scene.GROUND_DEPTH)
             var my = base / 2 - ((base / 2 - newY) * progress)
             camera.setZoom(((base / 2)) / (base - my))
         });
@@ -80,7 +81,7 @@ export class MainGame extends Scene {
 
         scene.mainCamera = this.cameras.main
 
-        var sky = scene.add.image(400, 300, 'sky').setScale(10);
+        var sky: Image = scene.add.image(400, 300, 'sky').setScale(10);
         //sky.setInteractive();
 
         //var particles = this.add.particles('red');
@@ -95,8 +96,8 @@ export class MainGame extends Scene {
 
         this.ground = this.physics.add.staticGroup();
 
-        this.groundShards = this.physics.add.group();
-        this.flyingShards = this.physics.add.group();
+        var groundShards: Group = this.physics.add.group();
+        var flyingShards = this.physics.add.group();
 
 
         var diamond: ImageWithDynamicBody = this.physics.add.image(400, -200, 'diamond');
@@ -106,7 +107,7 @@ export class MainGame extends Scene {
         diamond.setInteractive()
         emitter.startFollow(diamond);
         diamond.on('pointerdown', function (pointer, targets) {
-            var shard = scene.flyingShards.create(400, 500, 'diamond');
+            var shard = flyingShards.create(400, 500, 'diamond');
             shard.setBounce(0);
             //shard.setCollideWorldBounds(true);
             shard.setBlendMode(Phaser.BlendModes.ADD);
@@ -117,20 +118,21 @@ export class MainGame extends Scene {
             scene.minimumStage(scene.BANK_STAGE)
 
             shard.on('pointerdown', function (pointer, targets) {
-                if (scene.groundShards.contains(shard)) {
-                    scene.groundShards.remove(shard)
-                    scene.flyingShards.add(shard)
+                if (groundShards.contains(shard)) {
+                    groundShards.remove(shard)
+                    flyingShards.add(shard)
                     shard.setVelocity(Phaser.Math.Between(100, 200), Phaser.Math.Between(-500, -900))
                 }
             })
         });
 
+        //var bank: ArcadeColliderType
 
-        this.bank = this.physics.add.image(915, 520, 'bank');
-        this.bank.setSize(this.bank.width - 200, this.bank.height - 200, true);
-        this.bank.setScale(.25)
-        this.bank.setImmovable(true);
-        this.bank.body.allowGravity = false;
+        var bank: ImageWithDynamicBody = this.physics.add.image(915, 520, 'bank');
+        bank.setSize(bank.width - 200, bank.height - 200, true);
+        bank.setScale(.25)
+        bank.setImmovable(true);
+        bank.body.allowGravity = false;
 
         var house = this.physics.add.image(this.HOUSE_X, this.HOUSE_Y, 'house');
         house.setScale(.35)
@@ -147,23 +149,23 @@ export class MainGame extends Scene {
         //
         // setup collisions
         //
-        this.physics.add.collider(this.flyingShards, this.ground, function (shard, platform) {
-            scene.flyingShards.remove(shard)
-            scene.groundShards.add(shard)
+        this.physics.add.collider(flyingShards, this.ground, function (shard, platform) {
+            flyingShards.remove(shard)
+            groundShards.add(shard)
             shard.setVelocity(0, 0)
         });
-        this.physics.add.collider(this.bank, this.flyingShards, function (bank, shard) {
+        this.physics.add.collider(bank, flyingShards, function (bank, shard) {
             shard.disableBody(true, true);
             scene.updateScore(1)
         });
-        this.physics.add.collider(this.groundShards, this.ground);
+        this.physics.add.collider(groundShards, this.ground);
         this.physics.add.collider(diamond, this.ground);
         this.physics.add.collider(this.unicorns, this.ground);
         this.physics.add.collider(this.returningUnicorns, this.ground);
-        this.physics.add.collider(this.unicorns, this.groundShards, function (unicorn, shard) {
+        this.physics.add.collider(this.unicorns, groundShards, function (unicorn, shard) {
             shard.setVelocity(0, 0)
-            scene.flyingShards.add(shard)
-            scene.groundShards.remove(shard)
+            flyingShards.add(shard)
+            groundShards.remove(shard)
             shard.setVelocity(Phaser.Math.Between(100, 200), Phaser.Math.Between(-500, -900));
             scene.unicorns.remove(unicorn)
             scene.returningUnicorns.add(unicorn)
@@ -207,8 +209,6 @@ export class MainGame extends Scene {
         //constText.setAlign('top')
 
 
-
-
         this.phys = this.physics
 
         unicornButton.on('pointerdown', function (pointer, targets) {
@@ -233,7 +233,7 @@ export class MainGame extends Scene {
         }
     }
 
-    updateScore(delta) {
+    updateScore(delta:integer) {
         this.score += delta
         if (this.score >= this.UNICORN_COST) {
             this.minimumStage(this.HOUSE_STAGE)
