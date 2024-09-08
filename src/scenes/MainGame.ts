@@ -13,20 +13,28 @@ type GameObjectWithBody = Phaser.Types.Physics.Arcade.GameObjectWithBody;
 type GameObject = Phaser.GameObjects.GameObject
 type Camera2D = Phaser.Cameras.Scene2D.Camera;
 type ArcadeColliderType = Phaser.Types.Physics.Arcade.ArcadeColliderType;
+type Point = Phaser.Geom.Point
+
 
 const UNICORN_SPEED: integer = 350
 const GROUND_LEVEL: integer = 580
 const GROUND_DEPTH: integer = 25
 //const SCORE_Y = GROUND_LEVEL - 200
-const SCORE_X = 900
-const HOUSE_X = 1200
-const HOUSE_Y = 520
-const STATUS_Y = 410
+const SCORE_X: integer = 900
+const HOUSE_X: integer = 1200
+const HOUSE_Y: integer = 520
+const STATUS_Y: integer = 410
+
+
+const DIAMOND_POS: Point = new Phaser.Geom.Point(400, -200)
+const STOMPER_HOUSE_POS: Point = new Phaser.Geom.Point(0, 520)
 
 
 const DIAMOND_STAGE = 0
 const BANK_STAGE = 1
 const HOUSE_STAGE = 2
+const STOMPER_STAGE = 3
+const INITIAL_STAGE = STOMPER_STAGE
 
 
 export class MainGame extends Scene {
@@ -34,14 +42,16 @@ export class MainGame extends Scene {
     groundShards: Group
     flyingShards: Group
 
-    unicornCost: integer = 3
+    runnerCost: integer = 3
+    stomperCost: integer = 10
 
     score: integer = 0
     scoreText: Text;
     costText: Text;
     mainCamera: Camera2D
-    unicorns: Group
-    returningUnicorns: Group
+    runners: Group
+    returningRunners: Group
+    stompers: Group
 
     stage = 0
 
@@ -53,7 +63,6 @@ export class MainGame extends Scene {
     preload(): void {
     }
 
-
     minimumStage(minStage: integer): void {
         if (this.stage < minStage) {
             switch (minStage) {
@@ -64,6 +73,9 @@ export class MainGame extends Scene {
                     break;
                 case HOUSE_STAGE:
                     this.panCameraTo(800, GROUND_LEVEL / 2 - 100)
+                    break;
+                case STOMPER_STAGE:
+                    this.panCameraTo(500, GROUND_LEVEL / 2 - 200)
                     break;
             }
             this.stage = minStage
@@ -79,17 +91,17 @@ export class MainGame extends Scene {
         });
     }
 
-     onDiamondClick(_diamond:ImageWithDynamicBody):void {
-        var shard:Sprite = this.flyingShards.create(400, 500, 'diamond');
+    onDiamondClick(_diamond: ImageWithDynamicBody): void {
+        var shard: Sprite = this.flyingShards.create(400, 500, 'diamond');
         shard.setBlendMode(Phaser.BlendModes.ADD).setAlpha(0.5).setScale(.05)
         shard.setBounce(0)
         shard.setVelocity(Phaser.Math.Between(100, 200), Phaser.Math.Between(-500, -900));
         shard.setInteractive()
         shard.on('pointerdown', this.onShardClick.bind(this, shard))
-        this.minimumStage(BANK_STAGE)        
-     }
+        this.minimumStage(BANK_STAGE)
+    }
 
-     onShardClick(shard:Sprite):void {
+    onShardClick(shard: Sprite): void {
         if (this.groundShards.contains(shard)) {
             this.groundShards.remove(shard)
             this.flyingShards.add(shard)
@@ -97,25 +109,39 @@ export class MainGame extends Scene {
         }
     }
 
-    onHouseClick(_house:ImageWithDynamicBody):void {
-        if (this.score >= this.unicornCost) {
+    onHouseClick(_house: ImageWithDynamicBody): void {
+        if (this.score >= this.runnerCost) {
             // TODO - animate shards flying from bank to house to 'pay' for it
             var unicorn = this.physics.add.sprite(1200, GROUND_LEVEL - 30, 'unicorn');
-            this.unicorns.add(unicorn)
+            this.runners.add(unicorn)
             unicorn.setBounce(0);
             unicorn.setScale(4)
             unicorn.setFlipX(true);
             unicorn.setVelocity(-350, -400)
             unicorn.anims.play('right', true);
-            this.changeScore(-this.unicornCost)            
-            this.unicornCost += 3            
-            this.costText.setText(String(this.unicornCost))
+            this.changeScore(-this.runnerCost)
+            this.runnerCost += 3
+            this.costText.setText(String(this.runnerCost))
+            this.minimumStage(STOMPER_STAGE)
+        }
+    }
+
+    onStomperHouseClick(_house: ImageWithDynamicBody): void {
+        if (this.score >= this.stomperCost) {
+            // TODO - animate shards flying from bank to house to 'pay' for it
+            var stomper = this.physics.add.sprite(STOMPER_HOUSE_POS.x, STOMPER_HOUSE_POS.y, 'unicorn2');
+            this.stompers.add(stomper)
+            stomper.setBounce(0);
+            stomper.setScale(4).setFlipX(false)
+            stomper.setVelocity(350, -400)
+            stomper.anims.play('right', true);
+            this.changeScore(-this.stomperCost)
         }
     }
 
     changeScore(delta: integer) {
         this.score += delta
-        if (this.score >= this.unicornCost) {
+        if (this.score >= this.runnerCost) {
             this.minimumStage(HOUSE_STAGE)
             this.costText.setColor('#00FF00')
         } else {
@@ -125,6 +151,9 @@ export class MainGame extends Scene {
     }
 
     create() {
+
+
+
         var scene = this
 
         this.mainCamera = this.cameras.main
@@ -143,7 +172,7 @@ export class MainGame extends Scene {
         this.groundShards = this.physics.add.group();
         this.flyingShards = this.physics.add.group();
 
-        var diamond:ImageWithDynamicBody = this.physics.add.image(400, -200, 'diamond');
+        var diamond: ImageWithDynamicBody = this.physics.add.image(DIAMOND_POS.x, DIAMOND_POS.y, 'diamond');        
 
         diamond.setSize(4, 4);
         diamond.setScale(.5)
@@ -151,51 +180,63 @@ export class MainGame extends Scene {
         emitter.startFollow(diamond);
         diamond.on('pointerdown', this.onDiamondClick.bind(this, diamond))
 
-        var bank:ImageWithDynamicBody = this.physics.add.image(915, 520, 'bank');
+        var bank: ImageWithDynamicBody = this.physics.add.image(915, 520, 'bank');
         // FIXME compiler complaining about the third argument here, but removing it causes lag
         bank.setScale(.25)
         bank.body.setImmovable(true);
         bank.body.allowGravity = false;
 
-        var house:ImageWithDynamicBody = this.physics.add.image(HOUSE_X, HOUSE_Y, 'house');
+        var house: ImageWithDynamicBody = this.physics.add.image(HOUSE_X, HOUSE_Y, 'house');
         house.setScale(.35)
         house.setImmovable(true);
         house.body.allowGravity = false;
         house.setInteractive()
         house.on('pointerdown', this.onHouseClick.bind(this, house))
 
+        var stomperHouse: ImageWithDynamicBody = this.physics.add.image(STOMPER_HOUSE_POS.x, STOMPER_HOUSE_POS.y, 'stomperHouse');
+        stomperHouse.setScale(.35)
+        stomperHouse.setImmovable(true);
+        stomperHouse.body.allowGravity = false;
+        stomperHouse.setInteractive()
+        stomperHouse.on('pointerdown', this.onStomperHouseClick.bind(this, stomperHouse))
 
-        this.unicorns = this.physics.add.group();
-        this.returningUnicorns = this.physics.add.group();
+
+
+        this.runners = this.physics.add.group();
+        this.returningRunners = this.physics.add.group();
+
+        this.stompers = this.physics.add.group();
+        this.physics.add.collider(this.runners, ground);
+
 
         //
         // setup collisions
         //
 
         this.physics.add.collider(this.flyingShards, ground, function (s, _) {
-            var shard: Sprite = s as Sprite;            
+            var shard: Sprite = s as Sprite;
             scene.flyingShards.remove(shard)
             scene.groundShards.add(shard)
             shard.setVelocity(0, 0)
         });
         this.physics.add.collider(bank, this.flyingShards, function (_, s) {
-            var shard: Sprite = s as Sprite;            
+            var shard: Sprite = s as Sprite;
             shard.disableBody(true, true);
             scene.changeScore(1)
         });
         this.physics.add.collider(this.groundShards, ground);
         this.physics.add.collider(diamond, ground);
-        this.physics.add.collider(this.unicorns, ground);
-        this.physics.add.collider(this.returningUnicorns, ground);
-        this.physics.add.collider(this.unicorns, this.groundShards, (u, s): void => {
+        this.physics.add.collider(this.runners, ground);
+        this.physics.add.collider(this.returningRunners, ground);
+        this.physics.add.collider(this.runners, this.groundShards, (u, s): void => {
             var shard: Sprite = s as Sprite;
             var unicorn: Sprite = u as Sprite;
             shard.setVelocity(0, 0);
             scene.flyingShards.add(shard);
             scene.groundShards.remove(shard);
             shard.setVelocity(Phaser.Math.Between(100, 200), Phaser.Math.Between(-500, -900));
-            scene.unicorns.remove(unicorn);
-            scene.returningUnicorns.add(unicorn);
+            scene.runners.remove(unicorn);
+            scene.returningRunners.add(unicorn);
             unicorn.setVelocityX(UNICORN_SPEED);
             unicorn.setFlipX(!unicorn.flipX);
         });
@@ -227,28 +268,30 @@ export class MainGame extends Scene {
         unicornButton.setScale(3)
         unicornButton.setFlipX(true);
         unicornButton.setInteractive()
-        this.costText = this.add.text(HOUSE_X + 30, STATUS_Y - 4, String(this.unicornCost), { fontSize: '32px', color: '#000' });
+        this.costText = this.add.text(HOUSE_X + 30, STATUS_Y - 4, String(this.runnerCost), { fontSize: '32px', color: '#000' });
         //constText.setAlign('top')
 
+
+        this.minimumStage(INITIAL_STAGE)
     }
 
     update() {
-        for(var i=0; i<this.unicorns.children.entries.length; i++) {
-            var unicorn: Sprite = this.unicorns.children.entries[i] as Sprite;
+        for (var i = 0; i < this.runners.children.entries.length; i++) {
+            var unicorn: Sprite = this.runners.children.entries[i] as Sprite;
             // make the unicorn turn around if it is off the world boundaries
             if (typeof unicorn !== 'undefined' && unicorn.x < 0) {
-                this.unicorns.remove(unicorn)
-                this.returningUnicorns.add(unicorn)
+                this.runners.remove(unicorn)
+                this.returningRunners.add(unicorn)
                 unicorn.setVelocityX(UNICORN_SPEED)
                 unicorn.setFlipX(false)
             }
         }
-        for(var i=0; i<this.returningUnicorns.children.entries.length; i++) {
-            var unicorn: Sprite = this.returningUnicorns.children.entries[i] as Sprite;
+        for (var i = 0; i < this.returningRunners.children.entries.length; i++) {
+            var unicorn: Sprite = this.returningRunners.children.entries[i] as Sprite;
             // make the unicorn turn around if it is off the world boundaries
             if (typeof unicorn !== 'undefined' && unicorn.x > 1200) {
-                this.returningUnicorns.remove(unicorn)
-                this.unicorns.add(unicorn)
+                this.returningRunners.remove(unicorn)
+                this.runners.add(unicorn)
                 unicorn.setVelocityX(-UNICORN_SPEED)
                 unicorn.setFlipX(true)
             }
