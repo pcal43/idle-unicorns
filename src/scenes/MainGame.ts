@@ -31,8 +31,6 @@ const HOUSE_STAGE = 2
 
 export class MainGame extends Scene {
 
-
-
     groundShards: Group
     flyingShards: Group
 
@@ -74,25 +72,21 @@ export class MainGame extends Scene {
 
 
     panCameraTo(newX: integer, newY: integer): void {
-        this.mainCamera.pan(newX, newY, 2500, 'Linear', false, function (camera, progress, dx, dy) {
+        this.mainCamera.pan(newX, newY, 2500, 'Linear', false, function (camera, progress, _dx, _dy) {
             var base = (GROUND_LEVEL + GROUND_DEPTH)
             var my = base / 2 - ((base / 2 - newY) * progress)
             camera.setZoom(((base / 2)) / (base - my))
         });
     }
 
-
      onDiamondClick(_diamond:ImageWithDynamicBody):void {
         var shard:Sprite = this.flyingShards.create(400, 500, 'diamond');
-        shard.setBounce(0);
-        //shard.setCollideWorldBounds(true);
-        shard.setBlendMode(Phaser.BlendModes.ADD);
-        shard.setAlpha(0.5);
-        shard.setScale(.05)
+        shard.setBlendMode(Phaser.BlendModes.ADD).setAlpha(0.5).setScale(.05)
+        shard.setBounce(0)
         shard.setVelocity(Phaser.Math.Between(100, 200), Phaser.Math.Between(-500, -900));
         shard.setInteractive()
-        this.minimumStage(BANK_STAGE)
         shard.on('pointerdown', this.onShardClick.bind(this, shard))
+        this.minimumStage(BANK_STAGE)        
      }
 
      onShardClick(shard:Sprite):void {
@@ -102,7 +96,6 @@ export class MainGame extends Scene {
             shard.setVelocity(Phaser.Math.Between(100, 200), Phaser.Math.Between(-500, -900))
         }
     }
-
 
     onHouseClick(_house:ImageWithDynamicBody):void {
         if (this.score >= this.unicornCost) {
@@ -114,12 +107,22 @@ export class MainGame extends Scene {
             unicorn.setFlipX(true);
             unicorn.setVelocity(-350, -400)
             unicorn.anims.play('right', true);
-            this.updateScore(-this.unicornCost)            
+            this.changeScore(-this.unicornCost)            
             this.unicornCost += 3            
             this.costText.setText(String(this.unicornCost))
         }
     }
 
+    changeScore(delta: integer) {
+        this.score += delta
+        if (this.score >= this.unicornCost) {
+            this.minimumStage(HOUSE_STAGE)
+            this.costText.setColor('#00FF00')
+        } else {
+            this.costText.setColor('#FF0000')
+        }
+        this.scoreText.setText(String(this.score))
+    }
 
     create() {
         var scene = this
@@ -178,7 +181,7 @@ export class MainGame extends Scene {
         this.physics.add.collider(bank, this.flyingShards, function (_, s) {
             var shard: Sprite = s as Sprite;            
             shard.disableBody(true, true);
-            scene.updateScore(1)
+            scene.changeScore(1)
         });
         this.physics.add.collider(this.groundShards, ground);
         this.physics.add.collider(diamond, ground);
@@ -227,18 +230,6 @@ export class MainGame extends Scene {
         this.costText = this.add.text(HOUSE_X + 30, STATUS_Y - 4, String(this.unicornCost), { fontSize: '32px', color: '#000' });
         //constText.setAlign('top')
 
-    }
-
-
-    updateScore(delta: integer) {
-        this.score += delta
-        if (this.score >= this.unicornCost) {
-            this.minimumStage(HOUSE_STAGE)
-            this.costText.setColor('#00FF00')
-        } else {
-            this.costText.setColor('#FF0000')
-        }
-        this.scoreText.setText(String(this.score))
     }
 
     update() {
