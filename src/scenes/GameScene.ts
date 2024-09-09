@@ -42,6 +42,9 @@ const HOUSE_STAGE = 2
 const STOMPER_STAGE = 3
 const INITIAL_STAGE = STOMPER_STAGE
 
+const BLACK = '#000';
+const GREEN = '#00FF00';
+const RED = '#FF0000';
 
 export class GameScene extends Scene {
 
@@ -50,15 +53,17 @@ export class GameScene extends Scene {
     flyingShards: Group
 
     runnerCost: integer = 3
-    stomperCost: integer = 10
+    stomperCost: integer = 3
 
     score: integer = 0
     scoreText: Text;
-    costText: Text;
+    runnerCostText: Text;
     mainCamera: Camera2D
     runners: Group
     returningRunners: Group
     stomperCollisionsGroup: Group
+
+    stomperCostText: Text;
 
     diamond:Sprite
 
@@ -67,9 +72,8 @@ export class GameScene extends Scene {
     stage = 0
 
     constructor() {
-        super('MainGame');
+        super('GameScene');
     }
-
 
     point(x:integer, y:integer):Point {
         return new Phaser.Geom.Point(x,y)
@@ -141,25 +145,33 @@ export class GameScene extends Scene {
             runner.anims.play('right', true);
             this.changeScore(-this.runnerCost)
             this.runnerCost += 3
-            this.costText.setText(String(this.runnerCost))
+            this.runnerCostText.setText(String(this.runnerCost))
             this.minimumStage(STOMPER_STAGE)
         }
     }
 
     onStomperHouseClick(_house: ImageWithDynamicBody): void {
-        //if (this.score >= this.stomperCost) {
+        if (this.score >= this.stomperCost) {
             new Stomper().create(this, this.point(STOMPER_HOUSE_POS.x, GROUND_LEVEL -30))
-        //    this.changeScore(-this.stomperCost)
-        //}
+            this.changeScore(-this.stomperCost)
+            this.stomperCostText.setText(String(this.stomperCost))            
+            this.stomperCost += 3
+        }
     }
 
     changeScore(delta: integer) {
         this.score += delta
         if (this.score >= this.runnerCost) {
             this.minimumStage(HOUSE_STAGE)
-            this.costText.setColor('#00FF00')
+            this.runnerCostText.setColor(GREEN)
         } else {
-            this.costText.setColor('#FF0000')
+            this.runnerCostText.setColor(RED)
+        }
+        if (this.score >= this.stomperCost) {
+            this.minimumStage(HOUSE_STAGE)
+            this.stomperCostText.setColor(GREEN)
+        } else {
+            this.stomperCostText.setColor(RED)
         }
         this.scoreText.setText(String(this.score))
     }
@@ -277,14 +289,11 @@ export class GameScene extends Scene {
         this.scoreText = this.add.text(SCORE_X, STATUS_Y - 22, '0', { fontSize: '48px', color: '#000' });
         this.scoreText.setText("0")
 
-        //unicornButton = this.physics.add.sprite(900, 50, 'unicorn');
-        var unicornButton = this.add.sprite(HOUSE_X, STATUS_Y, 'unicorn');
-        //unicornButton = this.add.sprite(100, 70, 'unicorn');
-        //unicornButton.frame = 0
-        unicornButton.setScale(3)
-        unicornButton.setFlipX(true);
-        unicornButton.setInteractive()
-        this.costText = this.add.text(HOUSE_X + 30, STATUS_Y - 4, String(this.runnerCost), { fontSize: '32px', color: '#000' });
+        this.add.sprite(HOUSE_X, STATUS_Y, 'unicorn').setScale(3).setFlipX(true)
+        this.runnerCostText = this.add.text(HOUSE_X + 30, STATUS_Y - 4, String(this.runnerCost), { fontSize: '32px', color: RED });
+
+        this.add.sprite(STOMPER_HOUSE_POS.x, STATUS_Y, 'stomperSheet').setScale(3)
+        this.stomperCostText = this.add.text(STOMPER_HOUSE_POS.x + 30, STATUS_Y - 4, String(this.runnerCost), { fontSize: '32px', color: RED });
         //constText.setAlign('top')
 
 

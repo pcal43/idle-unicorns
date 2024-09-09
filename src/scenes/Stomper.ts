@@ -7,6 +7,7 @@ type Sprite = Phaser.Physics.Arcade.Sprite
 const RUNPAST = 200
 const HOUSE_X = 0
 const MIN_STOMPS = 3
+const REST_FRAMES = 100
 
 enum StomperState {
     MOVING_RIGHT,
@@ -50,6 +51,13 @@ export class Stomper {
 
             case StomperState.STOMPING:
             case StomperState.JUMPING:
+
+                if (this.sprite.body.velocity.y > 0) {
+                    this.sprite.anims.stop()
+                } else {
+                    this.sprite.anims.play('stomperAnim', true)
+                }
+
                 if (scene.physics.overlap(this.sprite, scene.diamond)) {
                     this.sprite.setVelocity(0, -400)
                     this.state = StomperState.STOMPING
@@ -58,8 +66,9 @@ export class Stomper {
                         if (this.stateVal++ > MIN_STOMPS) {
                             if (Phaser.Math.Between(0, 1) == 0) {
                                 this.state = StomperState.MOVING_LEFT
+                                this.sprite.anims.play('stomperAnim', true)
                                 this.sprite.setVelocity(-250, -250)
-                                this.sprite.setFlipX(true)                            
+                                this.sprite.setFlipX(true)
                             }
                         }
                     } else {
@@ -69,22 +78,22 @@ export class Stomper {
                 }
                 break
 
-                case StomperState.MOVING_LEFT:
-                    if (this.sprite.x < HOUSE_X) {
-                        this.state = StomperState.RESTING
-                        this.sprite.setActive(false).setVisible(false)
-                        this.sprite.setVelocity(0, 0)
-                    }
-                    break
-
-                case StomperState.RESTING:
-                    if (this.stateVal++ > 100) {
-                        this.state = StomperState.MOVING_RIGHT
-                        this.sprite.setVelocity(350, 0).setActive(true).setVisible(true)
-                        this.sprite.setFlipX(false)
-                        this.stateVal = 0
-                    }
-                    break
+            case StomperState.MOVING_LEFT:
+                if (this.sprite.x < HOUSE_X) {
+                    this.state = StomperState.RESTING
+                    this.sprite.setActive(false).setVisible(false)
+                    this.sprite.setVelocity(0, 0)
                 }
+                break
+
+            case StomperState.RESTING:
+                if (this.stateVal++ > REST_FRAMES) {
+                    this.state = StomperState.MOVING_RIGHT
+                    this.sprite.setVelocity(350, 0).setActive(true).setVisible(true)
+                    this.sprite.setFlipX(false)
+                    this.stateVal = 0
+                }
+                break
+        }
     }
 }
