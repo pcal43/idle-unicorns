@@ -1,7 +1,7 @@
 
 import * as Phaser from "phaser";
 
-import { MainGame } from './scenes/MainGame.ts';
+import { GameScene } from './scenes/GameScene.ts';
 import { Preloader } from './scenes/Preloader.ts';
 import { BackgroundScene } from './scenes/BackgroundScene.ts';
 
@@ -29,7 +29,7 @@ var config = {
   },   **/   
 
     pixelArt: true,
-    scene: [ Preloader, BackgroundScene, MainGame ]
+    scene: [ Preloader, BackgroundScene, GameScene ]
 };
 
 export default new Phaser.Game(config);

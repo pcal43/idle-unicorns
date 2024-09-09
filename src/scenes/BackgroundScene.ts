@@ -35,7 +35,7 @@ export class BackgroundScene extends Scene {
     create() {
         this.canvas = this.sys.game.canvas;
         var sky:Image = this.add.image(0, 0, 'sky').setDisplaySize(this.canvas.width, this.canvas.height).setOrigin(0, 0);
-
+        //sky.setTint(0x333333)
     }
 
     update() {

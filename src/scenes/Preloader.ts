@@ -31,7 +31,9 @@ export class Preloader extends Scene {
         this.load.image('stomperHouse', 'assets/house2.png');        
         this.load.image('red', 'assets/red.png');
         this.load.image('sky', 'assets/sky.png');
+        this.load.spritesheet('stomperSheet', 'assets/unicorn2.png', { frameWidth: 16, frameHeight: 16, spacing: 1 });        
         this.load.spritesheet('unicorn', 'assets/unicorn.png', { frameWidth: 16, frameHeight: 16, spacing: 1 });
+
     }
 
     create() {
