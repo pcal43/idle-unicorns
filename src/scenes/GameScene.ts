@@ -36,6 +36,8 @@ const DIAMOND_POS: Point = new Phaser.Geom.Point(400, -200)
 const STOMPER_HOUSE_POS: Point = new Phaser.Geom.Point(0, 520)
 
 
+const RUNNER_COST_INCREMENT = 1
+const STOMPER_COST_INCREMENT = 1
 const DIAMOND_STAGE = 0
 const BANK_STAGE = 1
 const HOUSE_STAGE = 2
@@ -52,8 +54,8 @@ export class GameScene extends Scene {
     groundShards: Group
     flyingShards: Group
 
-    runnerCost: integer = 3
-    stomperCost: integer = 3
+    runnerCost: integer = 0
+    stomperCost: integer = 0
 
     score: integer = 0
     scoreText: Text;
@@ -144,7 +146,7 @@ export class GameScene extends Scene {
             runner.setVelocity(-350, -400)
             runner.anims.play('right', true);
             this.changeScore(-this.runnerCost)
-            this.runnerCost += 3
+            this.runnerCost += RUNNER_COST_INCREMENT
             this.runnerCostText.setText(String(this.runnerCost))
             this.minimumStage(STOMPER_STAGE)
         }
@@ -155,7 +157,7 @@ export class GameScene extends Scene {
             new Stomper().create(this, this.point(STOMPER_HOUSE_POS.x, GROUND_LEVEL -30))
             this.changeScore(-this.stomperCost)
             this.stomperCostText.setText(String(this.stomperCost))            
-            this.stomperCost += 3
+            this.stomperCost += STOMPER_COST_INCREMENT
         }
     }
 
