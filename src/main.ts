@@ -9,8 +9,6 @@ import { BackgroundScene } from './scenes/BackgroundScene.ts';
 // 22https://opengameart.org/content/running-unicorn-0
 var config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
     //backgroundColor: '#111111',
     physics: {
         default: 'arcade',
@@ -20,13 +18,12 @@ var config = {
         }
     },
   // Allows Phaser canvas to be responsive to browser sizing
-  /** 
+
   scale: {
     mode: Phaser.Scale.ENVELOP,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
-    width: 800,
-    height: 600,
-  },   **/   
+    autoCenter: Phaser.Scale.CENTER_BOTH
+
+  }, 
 
     pixelArt: true,
     scene: [ Preloader, BackgroundScene, GameScene ]
