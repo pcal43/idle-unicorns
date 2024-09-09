@@ -2,6 +2,10 @@
 import { Scene } from 'phaser';
 
 import * as Phaser from "phaser";
+import * as Phaser from "phaser";
+
+//type HTMLCanvasElement = org.w3c.dom.HTMLCanvasElement
+
 
 type Text = Phaser.GameObjects.Text;
 type StaticGroup = Phaser.Physics.Arcade.StaticGroup
@@ -14,7 +18,7 @@ type GameObject = Phaser.GameObjects.GameObject
 type Camera2D = Phaser.Cameras.Scene2D.Camera;
 type ArcadeColliderType = Phaser.Types.Physics.Arcade.ArcadeColliderType;
 type Point = Phaser.Geom.Point
-
+//type HTMLCanvasElement = Phaorg.w3c.dom.HTMLCanvasElement
 
 const UNICORN_SPEED: integer = 350
 const GROUND_LEVEL: integer = 580
@@ -39,6 +43,7 @@ const INITIAL_STAGE = STOMPER_STAGE
 
 export class MainGame extends Scene {
 
+    canvas:HTMLCanvasElement
     groundShards: Group
     flyingShards: Group
 
@@ -75,7 +80,7 @@ export class MainGame extends Scene {
                     this.panCameraTo(800, GROUND_LEVEL / 2 - 100)
                     break;
                 case STOMPER_STAGE:
-                    this.panCameraTo(500, GROUND_LEVEL / 2 - 200)
+                    this.panCameraTo(600, GROUND_LEVEL / 2 - 300)
                     break;
             }
             this.stage = minStage
@@ -151,14 +156,9 @@ export class MainGame extends Scene {
     }
 
     create() {
-
-
-
-        var scene = this
+        this.canvas = this.sys.game.canvas;
 
         this.mainCamera = this.cameras.main
-
-        this.add.image(400, 300, 'sky').setScale(10);
 
         const emitter = this.add.particles(0, 0, "red", {
             speed: 100,
@@ -213,6 +213,7 @@ export class MainGame extends Scene {
         // setup collisions
         //
 
+        var scene = this
         this.physics.add.collider(this.flyingShards, ground, function (s, _) {
             var shard: Sprite = s as Sprite;
             scene.flyingShards.remove(shard)
@@ -273,6 +274,8 @@ export class MainGame extends Scene {
 
 
         this.minimumStage(INITIAL_STAGE)
+
+        this.scene.launch('BackgroundScene')
     }
 
     update() {
