@@ -2,8 +2,8 @@
 import { Scene } from 'phaser';
 
 import * as Phaser from "phaser";
-import * as Phaser from "phaser";
 import { Stomper } from './Stomper.ts'
+import { Runner } from './Runner.ts'
 
 //type HTMLCanvasElement = org.w3c.dom.HTMLCanvasElement
 
@@ -26,14 +26,14 @@ const GROUND_LEVEL: integer = 580
 const GROUND_DEPTH: integer = 25
 //const SCORE_Y = GROUND_LEVEL - 200
 const SCORE_X: integer = 900
-const HOUSE_X: integer = 1200
-const HOUSE_Y: integer = 520
+
 const STATUS_Y: integer = 410
 
 
 const SHARD_POS: Point = new Phaser.Geom.Point(400, 500)
 const DIAMOND_POS: Point = new Phaser.Geom.Point(400, -200)
 const STOMPER_HOUSE_POS: Point = new Phaser.Geom.Point(0, 520)
+const RUNNER_HOUSE_POS: Point = new Phaser.Geom.Point(1200, 520)
 
 
 const RUNNER_COST_INCREMENT = 1
@@ -61,8 +61,8 @@ export class GameScene extends Scene {
     scoreText: Text;
     runnerCostText: Text;
     mainCamera: Camera2D
-    runners: Group
-    returningRunners: Group
+    runnersCollide: Group
+    returningRunnersCollide: Group
     stomperCollisionsGroup: Group
 
     stomperCostText: Text;
@@ -70,6 +70,7 @@ export class GameScene extends Scene {
     diamond:Sprite
 
     stompers: Set<Stomper> = new Set<Stomper>()
+    runners: Set<Runner> = new Set<Runner>()
 
     stage = 0
 
@@ -135,16 +136,9 @@ export class GameScene extends Scene {
         }
     }
 
-    onHouseClick(_house: ImageWithDynamicBody): void {
+    onRunnerHouseClick(_house: ImageWithDynamicBody): void {
         if (this.score >= this.runnerCost) {
-            // TODO - animate shards flying from bank to house to 'pay' for it
-            let runner:Sprite = this.physics.add.sprite(1200, GROUND_LEVEL - 30, 'unicorn');
-            this.runners.add(runner)
-            runner.setBounce(0);
-            runner.setScale(4)
-            runner.setFlipX(true);
-            runner.setVelocity(-350, -400)
-            runner.anims.play('right', true);
+            new Runner().create(this, this.point(RUNNER_HOUSE_POS.x, GROUND_LEVEL -30))
             this.changeScore(-this.runnerCost)
             this.runnerCost += RUNNER_COST_INCREMENT
             this.runnerCostText.setText(String(this.runnerCost))
@@ -209,12 +203,12 @@ export class GameScene extends Scene {
         bank.body.setImmovable(true);
         bank.body.allowGravity = false;
 
-        var house: ImageWithDynamicBody = this.physics.add.image(HOUSE_X, HOUSE_Y, 'house');
+        var house: ImageWithDynamicBody = this.physics.add.image(RUNNER_HOUSE_POS.x, RUNNER_HOUSE_POS.y, 'house');
         house.setScale(.35)
         house.setImmovable(true);
         house.body.allowGravity = false;
         house.setInteractive()
-        house.on('pointerdown', this.onHouseClick.bind(this, house))
+        house.on('pointerdown', this.onRunnerHouseClick.bind(this, house))
 
         var stomperHouse: ImageWithDynamicBody = this.physics.add.image(STOMPER_HOUSE_POS.x, STOMPER_HOUSE_POS.y, 'stomperHouse');
         stomperHouse.setScale(.35)
@@ -225,8 +219,8 @@ export class GameScene extends Scene {
 
 
 
-        this.runners = this.physics.add.group();
-        this.returningRunners = this.physics.add.group();
+        this.runnersCollide = this.physics.add.group();
+        this.returningRunnersCollide = this.physics.add.group();
 
         this.stomperCollisionsGroup = this.physics.add.group();
         this.physics.add.collider(this.stomperCollisionsGroup, ground);
@@ -250,19 +244,12 @@ export class GameScene extends Scene {
         });
         this.physics.add.collider(this.groundShards, ground);
         this.physics.add.collider(this.diamond, ground);
-        this.physics.add.collider(this.runners, ground);
-        this.physics.add.collider(this.returningRunners, ground);
-        this.physics.add.collider(this.runners, this.groundShards, (u, s): void => {
-            var shard: Sprite = s as Sprite;
+        this.physics.add.collider(this.runnersCollide, ground);
+        this.physics.add.collider(this.returningRunnersCollide, ground);
+        this.physics.add.collider(this.runnersCollide, this.groundShards, (u, shard): void => {
             var unicorn: Sprite = u as Sprite;
-            shard.setVelocity(0, 0);
-            scene.flyingShards.add(shard);
-            scene.groundShards.remove(shard);
-            shard.setVelocity(Phaser.Math.Between(100, 200), Phaser.Math.Between(-500, -900));
-            scene.runners.remove(unicorn);
-            scene.returningRunners.add(unicorn);
-            unicorn.setVelocityX(UNICORN_SPEED);
-            unicorn.setFlipX(!unicorn.flipX);
+            var runner: Runner = unicorn.getData('Runner')
+            runner.collideWithShard(this, shard as Sprite)
         });
 
         var grass = this.add.tileSprite(-2048, GROUND_LEVEL, 4096, GROUND_DEPTH, "grass");
@@ -291,8 +278,8 @@ export class GameScene extends Scene {
         this.scoreText = this.add.text(SCORE_X, STATUS_Y - 22, '0', { fontSize: '48px', color: '#000' });
         this.scoreText.setText("0")
 
-        this.add.sprite(HOUSE_X, STATUS_Y, 'unicorn').setScale(3).setFlipX(true)
-        this.runnerCostText = this.add.text(HOUSE_X + 30, STATUS_Y - 4, String(this.runnerCost), { fontSize: '32px', color: RED });
+        this.add.sprite(RUNNER_HOUSE_POS.x, STATUS_Y, 'unicorn').setScale(3).setFlipX(true)
+        this.runnerCostText = this.add.text(RUNNER_HOUSE_POS.x + 30, STATUS_Y - 4, String(this.runnerCost), { fontSize: '32px', color: RED });
 
         this.add.sprite(STOMPER_HOUSE_POS.x, STATUS_Y, 'stomperSheet').setScale(3)
         this.stomperCostText = this.add.text(STOMPER_HOUSE_POS.x + 30, STATUS_Y - 4, String(this.runnerCost), { fontSize: '32px', color: RED });
@@ -307,27 +294,6 @@ export class GameScene extends Scene {
     update() {
 
         for (let stomper of this.stompers) stomper.update(this)
-
-        for (let i = 0; i < this.runners.children.entries.length; i++) {
-            let unicorn: Sprite = this.runners.children.entries[i] as Sprite;
-            // make the unicorn turn around if it is off the world boundaries
-            if (typeof unicorn !== 'undefined' && unicorn.x < 0) {
-                this.runners.remove(unicorn)
-                this.returningRunners.add(unicorn)
-                unicorn.setVelocityX(UNICORN_SPEED)
-                unicorn.setFlipX(false)
-            }
-        }
-        for (let i = 0; i < this.returningRunners.children.entries.length; i++) {
-            var unicorn: Sprite = this.returningRunners.children.entries[i] as Sprite;
-            // make the unicorn turn around if it is off the world boundaries
-            if (typeof unicorn !== 'undefined' && unicorn.x > 1200) {
-                this.returningRunners.remove(unicorn)
-                this.runners.add(unicorn)
-                unicorn.setVelocityX(-UNICORN_SPEED)
-                unicorn.setFlipX(true)
-            }
-        }
-
+        for (let runner of this.runners) runner.update(this)
     }
 }
