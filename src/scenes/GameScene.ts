@@ -21,8 +21,7 @@ type ArcadeColliderType = Phaser.Types.Physics.Arcade.ArcadeColliderType;
 type Point = Phaser.Geom.Point
 //type HTMLCanvasElement = Phaorg.w3c.dom.HTMLCanvasElement
 
-const UNICORN_SPEED: integer = 350
-const GROUND_LEVEL: integer = 580
+const GROUND_LEVEL: integer = 768-20
 const GROUND_DEPTH: integer = 25
 //const SCORE_Y = GROUND_LEVEL - 200
 const SCORE_X: integer = 900
@@ -176,6 +175,8 @@ export class GameScene extends Scene {
         this.canvas = this.sys.game.canvas;
 
         this.mainCamera = this.cameras.main
+
+
 
         const emitter = this.add.particles(0, 0, "red", {
             speed: 100,
