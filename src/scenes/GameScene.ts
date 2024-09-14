@@ -19,20 +19,27 @@ type GameObject = Phaser.GameObjects.GameObject
 type Camera2D = Phaser.Cameras.Scene2D.Camera;
 type ArcadeColliderType = Phaser.Types.Physics.Arcade.ArcadeColliderType;
 type Point = Phaser.Geom.Point
+type Size = Phaser.Structs.Size
+
+
 //type HTMLCanvasElement = Phaorg.w3c.dom.HTMLCanvasElement
 
-const GROUND_LEVEL: integer = 768-20
-const GROUND_DEPTH: integer = 25
+const SCREEN_SIZE:Size = new Phaser.Structs.Size(1024, 768) // from main.ts config
+const GROUND_DEPTH:integer = 20
+const GROUND_LEVEL: integer = SCREEN_SIZE.height - GROUND_DEPTH
+
+
+const DIAMOND_POS: Point = new Phaser.Geom.Point(400, -200) // starting position
+
 //const SCORE_Y = GROUND_LEVEL - 200
 const SCORE_X: integer = 900
 
 const STATUS_Y: integer = 410
 
-
 const SHARD_POS: Point = new Phaser.Geom.Point(400, 500)
-const DIAMOND_POS: Point = new Phaser.Geom.Point(400, -200)
+
 const STOMPER_HOUSE_POS: Point = new Phaser.Geom.Point(0, 520)
-const RUNNER_HOUSE_POS: Point = new Phaser.Geom.Point(1200, 520)
+const RUNNER_HOUSE_POS: Point = new Phaser.Geom.Point(SCREEN_SIZE.width, GROUND_LEVEL)
 
 
 const RUNNER_COST_INCREMENT = 1
@@ -96,7 +103,7 @@ export class GameScene extends Scene {
                     this.panCameraTo(800, GROUND_LEVEL / 2 - 100)
                     break;
                 case STOMPER_STAGE:
-                    this.panCameraTo(600, GROUND_LEVEL / 2 - 300)
+                    this.panCameraTo(SCREEN_SIZE.width / 2, SCREEN_SIZE.height / 2)
                     break;
             }
             this.stage = minStage
@@ -207,6 +214,7 @@ export class GameScene extends Scene {
         var house: ImageWithDynamicBody = this.physics.add.image(RUNNER_HOUSE_POS.x, RUNNER_HOUSE_POS.y, 'house');
         house.setScale(.35)
         house.setImmovable(true);
+        house.setOrigin(.5, 1)
         house.body.allowGravity = false;
         house.setInteractive()
         house.on('pointerdown', this.onRunnerHouseClick.bind(this, house))
@@ -258,6 +266,9 @@ export class GameScene extends Scene {
         //let ground = this.add.rectangle(-2048, GROUND_LEVEL, 4096, GROUND_DEPTH, 0xffffff);
         grass.setOrigin(0, 0); // i dont understand this
         ground.add(grass)
+
+        this.canvas.set = 'center'
+
 
         this.anims.create({
             key: 'right',

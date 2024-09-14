@@ -27,7 +27,7 @@ const FRAMES_PER_TINT_CHANGE = 100
 export class BackgroundScene extends Scene {
 
     canvas: HTMLCanvasElement
-    tint: number = 0x222222
+    tint: number = 0xDDDDDD //0x222222
     sky: Image
     frames: number = 0
 

@@ -19,12 +19,13 @@ var config = {
       gravity: { x: 0, y: 900 }
     }
   },
-  //https://newdocs.phaser.io/docs/3.80.0/Phaser.Types.Core.ScaleConfig
+  // https://newdocs.phaser.io/docs/3.80.0/Phaser.Types.Core.ScaleConfig
   scale: {
+    expandParent: true,
     width: 1024,
-    height: 768,
-    mode: Phaser.Scale.WIDTH_CONTROLS_HEIGHT,
-    autoCenter: Phaser.Scale.CENTER_HORIZONTALLY,
+    height: 768, 
+    mode: Phaser.Scale.CENTER_BOTH,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
   },
 
   pixelArt: true,
